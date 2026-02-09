@@ -93,6 +93,51 @@ async def create_tournament_ui(request: Request):
     )
 
 
+@app.post("/ui/tournaments/{tournament_id}/teams", response_class=HTMLResponse)
+async def add_team_ui(request: Request, tournament_id: str):
+    form = await request.form()
+    name = form.get("name")
+    tournament = repository.get_tournament(tournament_id)
+    if tournament is None:
+        return templates.TemplateResponse(
+            "partials/_teams.html",
+            {
+                "request": request,
+                "tournament": {"id": tournament_id, "teams": []},
+                "error": "Tournament not found",
+            },
+            status_code=404,
+        )
+
+    if not name:
+        return templates.TemplateResponse(
+            "partials/_teams.html",
+            {
+                "request": request,
+                "tournament": tournament,
+                "error": "Team name is required",
+            },
+        )
+
+    try:
+        enroll_team_use_case.execute(tournament_id, str(name))
+    except Exception as exc:
+        return templates.TemplateResponse(
+            "partials/_teams.html",
+            {
+                "request": request,
+                "tournament": tournament,
+                "error": str(exc),
+            },
+        )
+
+    tournament = repository.get_tournament(tournament_id)
+    return templates.TemplateResponse(
+        "partials/_teams.html",
+        {"request": request, "tournament": tournament},
+    )
+
+
 @app.get("/tournaments")
 def list_tournaments():
     return list_tournaments_use_case.execute()
