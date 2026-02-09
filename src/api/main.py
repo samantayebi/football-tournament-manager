@@ -138,6 +138,64 @@ async def add_team_ui(request: Request, tournament_id: str):
     )
 
 
+@app.post("/ui/tournaments/{tournament_id}/matches", response_class=HTMLResponse)
+async def create_match_ui(request: Request, tournament_id: str):
+    form = await request.form()
+    home_team_id = form.get("home_team_id")
+    away_team_id = form.get("away_team_id")
+    tournament = repository.get_tournament(tournament_id)
+    if tournament is None:
+        return templates.TemplateResponse(
+            "partials/_matches.html",
+            {
+                "request": request,
+                "tournament": {"id": tournament_id, "teams": [], "matches": []},
+                "error": "Tournament not found",
+            },
+            status_code=404,
+        )
+
+    if not home_team_id or not away_team_id:
+        return templates.TemplateResponse(
+            "partials/_matches.html",
+            {
+                "request": request,
+                "tournament": tournament,
+                "error": "Both teams are required",
+            },
+        )
+
+    if home_team_id == away_team_id:
+        return templates.TemplateResponse(
+            "partials/_matches.html",
+            {
+                "request": request,
+                "tournament": tournament,
+                "error": "Home and away teams must be different",
+            },
+        )
+
+    try:
+        create_match_use_case.execute(
+            tournament_id, str(home_team_id), str(away_team_id)
+        )
+    except Exception as exc:
+        return templates.TemplateResponse(
+            "partials/_matches.html",
+            {
+                "request": request,
+                "tournament": tournament,
+                "error": str(exc),
+            },
+        )
+
+    tournament = repository.get_tournament(tournament_id)
+    return templates.TemplateResponse(
+        "partials/_matches.html",
+        {"request": request, "tournament": tournament},
+    )
+
+
 @app.get("/tournaments")
 def list_tournaments():
     return list_tournaments_use_case.execute()
