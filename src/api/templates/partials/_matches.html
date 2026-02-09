@@ -5,23 +5,26 @@
     hx-target="#matches-section"
     hx-swap="outerHTML"
   >
-    <label for="home-team">Create match</label>
+    <label for="home-team">Home team</label>
     <select
       id="home-team"
       name="home_team_id"
       required
       {% if form_disabled %}disabled{% endif %}
     >
+      <option value="" selected disabled>Choose a team</option>
       {% for team in tournament.teams %}
         <option value="{{ team.id }}">{{ team.name }}</option>
       {% endfor %}
     </select>
+    <label for="away-team">Away team</label>
     <select
       id="away-team"
       name="away_team_id"
       required
       {% if form_disabled %}disabled{% endif %}
     >
+      <option value="" selected disabled>Choose a team</option>
       {% for team in tournament.teams %}
         <option value="{{ team.id }}">{{ team.name }}</option>
       {% endfor %}
@@ -50,7 +53,11 @@
       <tbody>
         {% for match in tournament.matches %}
           <tr>
-            <td>{{ match.home_team_id }} vs {{ match.away_team_id }}</td>
+            <td>
+              {{ team_name_by_id.get(match.home_team_id, match.home_team_id) }}
+              vs
+              {{ team_name_by_id.get(match.away_team_id, match.away_team_id) }}
+            </td>
             <td>
               {% if match.home_goals is not none and match.away_goals is not none %}
                 ({{ match.home_goals }}–{{ match.away_goals }})

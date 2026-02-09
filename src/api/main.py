@@ -150,6 +150,7 @@ async def create_match_ui(request: Request, tournament_id: str):
             {
                 "request": request,
                 "tournament": {"id": tournament_id, "teams": [], "matches": []},
+                "team_name_by_id": {},
                 "error": "Tournament not found",
             },
             status_code=404,
@@ -161,6 +162,7 @@ async def create_match_ui(request: Request, tournament_id: str):
             {
                 "request": request,
                 "tournament": tournament,
+                "team_name_by_id": _team_name_by_id(tournament),
                 "error": "Both teams are required",
             },
         )
@@ -171,6 +173,7 @@ async def create_match_ui(request: Request, tournament_id: str):
             {
                 "request": request,
                 "tournament": tournament,
+                "team_name_by_id": _team_name_by_id(tournament),
                 "error": "Home and away teams must be different",
             },
         )
@@ -185,6 +188,7 @@ async def create_match_ui(request: Request, tournament_id: str):
             {
                 "request": request,
                 "tournament": tournament,
+                "team_name_by_id": _team_name_by_id(tournament),
                 "error": str(exc),
             },
         )
@@ -192,7 +196,11 @@ async def create_match_ui(request: Request, tournament_id: str):
     tournament = repository.get_tournament(tournament_id)
     return templates.TemplateResponse(
         "partials/_matches.html",
-        {"request": request, "tournament": tournament},
+        {
+            "request": request,
+            "tournament": tournament,
+            "team_name_by_id": _team_name_by_id(tournament),
+        },
     )
 
 
@@ -223,6 +231,7 @@ def tournament_detail(request: Request, tournament_id: str):
             "request": request,
             "tournament": tournament,
             "standings": [_standing_to_dict(standing) for standing in standings],
+            "team_name_by_id": _team_name_by_id(tournament),
         },
     )
 
@@ -325,3 +334,23 @@ def _standing_to_dict(standing: object) -> dict:
         "points": standing.points,
         "goal_diff": standing.goal_diff,
     }
+
+
+def _team_name_by_id(tournament: object) -> dict:
+    teams = []
+    if isinstance(tournament, dict):
+        teams = tournament.get("teams") or []
+    else:
+        teams = getattr(tournament, "teams", []) or []
+
+    name_by_id = {}
+    for team in teams:
+        if isinstance(team, dict):
+            team_id = team.get("id")
+            name = team.get("name")
+        else:
+            team_id = getattr(team, "id", None)
+            name = getattr(team, "name", None)
+        if team_id is not None and name is not None:
+            name_by_id[str(team_id)] = str(name)
+    return name_by_id
