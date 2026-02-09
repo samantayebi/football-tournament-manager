@@ -127,6 +127,16 @@ async def add_team_ui(request: Request, tournament_id: str):
             },
         )
 
+    if _team_name_exists(tournament, str(name)):
+        return templates.TemplateResponse(
+            "partials/_teams.html",
+            {
+                "request": request,
+                "tournament": tournament,
+                "error": "Team already exists",
+            },
+        )
+
     try:
         enroll_team_use_case.execute(tournament_id, str(name))
     except Exception as exc:
@@ -424,3 +434,25 @@ def _team_name_by_id(tournament: object) -> dict:
         if team_id is not None and name is not None:
             name_by_id[str(team_id)] = str(name)
     return name_by_id
+
+
+def _team_name_exists(tournament: object, name: str) -> bool:
+    normalized = name.strip().lower()
+    if not normalized:
+        return False
+
+    teams = []
+    if isinstance(tournament, dict):
+        teams = tournament.get("teams") or []
+    else:
+        teams = getattr(tournament, "teams", []) or []
+
+    for team in teams:
+        if isinstance(team, dict):
+            team_name = team.get("name")
+        else:
+            team_name = getattr(team, "name", None)
+        if team_name is not None and str(team_name).strip().lower() == normalized:
+            return True
+
+    return False
