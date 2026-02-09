@@ -1,0 +1,18 @@
+{% if tournament.teams %}
+  <table>
+    <thead>
+      <tr>
+        <th>Team</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for team in tournament.teams %}
+        <tr>
+          <td>{{ team.name }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No teams yet.</p>
+{% endif %}

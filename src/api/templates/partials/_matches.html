@@ -1,0 +1,26 @@
+{% if tournament.matches %}
+  <table>
+    <thead>
+      <tr>
+        <th>Match</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for match in tournament.matches %}
+        <tr>
+          <td>{{ match.home_team_id }} vs {{ match.away_team_id }}</td>
+          <td>
+            {% if match.home_goals is not none and match.away_goals is not none %}
+              {{ match.home_goals }} - {{ match.away_goals }}
+            {% else %}
+              (not played)
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No matches yet.</p>
+{% endif %}

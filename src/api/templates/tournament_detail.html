@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <a href="/">Back to tournaments</a>
+  <h1>{{ tournament.name }}</h1>
+
+  <section>
+    <h2>Teams</h2>
+    {% include "partials/_teams.html" %}
+  </section>
+
+  <section>
+    <h2>Matches</h2>
+    {% include "partials/_matches.html" %}
+  </section>
+
+  <section>
+    <h2>Standings</h2>
+    {% include "partials/_standings.html" %}
+  </section>
+{% endblock %}

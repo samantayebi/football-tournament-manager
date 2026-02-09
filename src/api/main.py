@@ -98,6 +98,32 @@ def list_tournaments():
     return list_tournaments_use_case.execute()
 
 
+@app.get("/tournaments/{tournament_id}", response_class=HTMLResponse)
+def tournament_detail(request: Request, tournament_id: str):
+    tournament = repository.get_tournament(tournament_id)
+    if tournament is None:
+        return templates.TemplateResponse(
+            "tournament_detail.html",
+            {
+                "request": request,
+                "tournament": {"id": tournament_id, "name": "Tournament not found"},
+                "standings": [],
+            },
+            status_code=404,
+        )
+
+    domain_tournament = _to_domain_tournament(tournament)
+    standings = compute_standings(domain_tournament)
+    return templates.TemplateResponse(
+        "tournament_detail.html",
+        {
+            "request": request,
+            "tournament": tournament,
+            "standings": [_standing_to_dict(standing) for standing in standings],
+        },
+    )
+
+
 @app.post("/tournaments")
 def create_tournament(payload: TournamentCreateRequest):
     return create_tournament_use_case.execute(payload.name)
