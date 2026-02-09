@@ -69,6 +69,7 @@ def home(request: Request):
         {
             "request": request,
             "title": "Football Tournament Manager",
+            "page_title": "Home",
             "tournaments": tournaments,
         },
     )
@@ -277,7 +278,9 @@ async def record_match_result_ui(
         {
             "request": request,
             "tournament": tournament,
-            "standings": [_standing_to_dict(standing) for standing in standings],
+            "standings": _sort_standings(
+                [_standing_to_dict(standing) for standing in standings]
+            ),
             "team_name_by_id": _team_name_by_id(tournament),
             "message": "Result saved",
         },
@@ -310,8 +313,11 @@ def tournament_detail(request: Request, tournament_id: str):
         {
             "request": request,
             "tournament": tournament,
-            "standings": [_standing_to_dict(standing) for standing in standings],
+            "standings": _sort_standings(
+                [_standing_to_dict(standing) for standing in standings]
+            ),
             "team_name_by_id": _team_name_by_id(tournament),
+            "page_title": "Tournament",
         },
     )
 
@@ -434,6 +440,17 @@ def _team_name_by_id(tournament: object) -> dict:
         if team_id is not None and name is not None:
             name_by_id[str(team_id)] = str(name)
     return name_by_id
+
+
+def _sort_standings(standings: list[dict]) -> list[dict]:
+    return sorted(
+        standings,
+        key=lambda standing: (
+            -standing.get("points", 0),
+            -standing.get("goal_diff", 0),
+            -standing.get("goals_for", 0),
+        ),
+    )
 
 
 def _team_name_exists(tournament: object, name: str) -> bool:

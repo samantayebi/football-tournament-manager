@@ -15,7 +15,7 @@
     </thead>
     <tbody>
       {% for standing in standings %}
-        <tr>
+        <tr {% if loop.first %}class="table-highlight"{% endif %}>
           <td>{{ team_name_by_id.get(standing.team_id, standing.team_id) }}</td>
           <td>{{ standing.played }}</td>
           <td>{{ standing.wins }}</td>

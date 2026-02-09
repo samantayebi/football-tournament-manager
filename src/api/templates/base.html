@@ -11,6 +11,12 @@
     <nav class="navbar">
       <div class="container">
         <a class="navbar__brand" href="/">Football Tournament Manager</a>
+        {% if page_title %}
+          <span>— {{ page_title }}</span>
+        {% endif %}
+        <a href="/">Home</a>
+        <a href="/docs">API Docs</a>
+        <a href="/health">Health</a>
       </div>
     </nav>
     <main class="container">
