@@ -9,13 +9,15 @@
     {% include "partials/_teams.html" %}
   </section>
 
-  <section>
-    <h2>Matches</h2>
-    {% include "partials/_matches.html" %}
-  </section>
+  <div id="match-and-standings">
+    <section>
+      <h2>Matches</h2>
+      {% include "partials/_matches.html" %}
+    </section>
 
-  <section>
-    <h2>Standings</h2>
-    {% include "partials/_standings.html" %}
-  </section>
+    <section>
+      <h2>Standings</h2>
+      {% include "partials/_standings.html" %}
+    </section>
+  </div>
 {% endblock %}

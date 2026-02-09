@@ -62,7 +62,28 @@
               {% if match.home_goals is not none and match.away_goals is not none %}
                 ({{ match.home_goals }}–{{ match.away_goals }})
               {% else %}
-                (not played)
+                {% set home_name = team_name_by_id.get(match.home_team_id, match.home_team_id) %}
+                {% set away_name = team_name_by_id.get(match.away_team_id, match.away_team_id) %}
+                <form
+                  hx-post="/ui/tournaments/{{ tournament.id }}/matches/{{ match.id }}/result"
+                  hx-target="#match-and-standings"
+                  hx-swap="innerHTML"
+                >
+                  <div>
+                    Recording result for: {{ home_name }} (home) vs {{ away_name }} (away)
+                  </div>
+                  <div style="display: flex; gap: 12px; align-items: flex-end;">
+                    <label>
+                      Home goals ({{ home_name }})
+                      <input type="number" name="home_goals" min="0" required />
+                    </label>
+                    <label>
+                      Away goals ({{ away_name }})
+                      <input type="number" name="away_goals" min="0" required />
+                    </label>
+                    <button type="submit">Save</button>
+                  </div>
+                </form>
               {% endif %}
             </td>
           </tr>

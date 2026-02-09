@@ -204,6 +204,62 @@ async def create_match_ui(request: Request, tournament_id: str):
     )
 
 
+@app.post(
+    "/ui/tournaments/{tournament_id}/matches/{match_id}/result",
+    response_class=HTMLResponse,
+)
+async def record_match_result_ui(
+    request: Request, tournament_id: str, match_id: str
+):
+    form = await request.form()
+    home_goals = form.get("home_goals")
+    away_goals = form.get("away_goals")
+    tournament = repository.get_tournament(tournament_id)
+    if tournament is None:
+        return templates.TemplateResponse(
+            "partials/_match_and_standings.html",
+            {
+                "request": request,
+                "tournament": {"id": tournament_id, "teams": [], "matches": []},
+                "standings": [],
+                "team_name_by_id": {},
+                "error": "Tournament not found",
+            },
+            status_code=404,
+        )
+
+    try:
+        record_match_result_use_case.execute(
+            tournament_id, match_id, int(home_goals), int(away_goals)
+        )
+    except Exception as exc:
+        domain_tournament = _to_domain_tournament(tournament)
+        standings = compute_standings(domain_tournament)
+        return templates.TemplateResponse(
+            "partials/_match_and_standings.html",
+            {
+                "request": request,
+                "tournament": tournament,
+                "standings": [_standing_to_dict(standing) for standing in standings],
+                "team_name_by_id": _team_name_by_id(tournament),
+                "error": str(exc),
+            },
+        )
+
+    tournament = repository.get_tournament(tournament_id)
+    domain_tournament = _to_domain_tournament(tournament)
+    standings = compute_standings(domain_tournament)
+    return templates.TemplateResponse(
+        "partials/_match_and_standings.html",
+        {
+            "request": request,
+            "tournament": tournament,
+            "standings": [_standing_to_dict(standing) for standing in standings],
+            "team_name_by_id": _team_name_by_id(tournament),
+        },
+    )
+
+
 @app.get("/tournaments")
 def list_tournaments():
     return list_tournaments_use_case.execute()
