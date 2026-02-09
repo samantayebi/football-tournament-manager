@@ -2,10 +2,17 @@
 
 {% block content %}
   <h1>{{ title }}</h1>
-  <p>Welcome! Choose a section to get started:</p>
-  <ul>
-    <li><a href="#">Teams</a></li>
-    <li><a href="#">Matches</a></li>
-    <li><a href="#">Standings</a></li>
-  </ul>
+  <form
+    hx-post="/ui/tournaments"
+    hx-target="#tournament-list"
+    hx-swap="innerHTML"
+  >
+    <label for="tournament-name">Create tournament</label>
+    <input id="tournament-name" name="name" type="text" required />
+    <button type="submit">Create</button>
+  </form>
+
+  <div id="tournament-list">
+    {% include "partials/_tournament_list.html" %}
+  </div>
 {% endblock %}

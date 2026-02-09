@@ -63,9 +63,33 @@ def health_check():
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
+    tournaments = list_tournaments_use_case.execute()
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "title": "Football Tournament Manager"},
+        {
+            "request": request,
+            "title": "Football Tournament Manager",
+            "tournaments": tournaments,
+        },
+    )
+
+
+@app.post("/ui/tournaments", response_class=HTMLResponse)
+async def create_tournament_ui(request: Request):
+    form = await request.form()
+    name = form.get("name")
+    if not name:
+        tournaments = list_tournaments_use_case.execute()
+        return templates.TemplateResponse(
+            "partials/_tournament_list.html",
+            {"request": request, "tournaments": tournaments},
+        )
+
+    create_tournament_use_case.execute(str(name))
+    tournaments = list_tournaments_use_case.execute()
+    return templates.TemplateResponse(
+        "partials/_tournament_list.html",
+        {"request": request, "tournaments": tournaments},
     )
 
 
