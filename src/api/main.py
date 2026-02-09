@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
@@ -15,12 +16,19 @@ from src.domain.services import compute_standings
 from src.infrastructure.repositories.in_memory_tournament_repository import (
     InMemoryTournamentRepository,
 )
+from src.infrastructure.repositories.mysql_tournament_repository import (
+    MySQLTournamentRepository,
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI()
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
-repository = InMemoryTournamentRepository()
+repository = (
+    MySQLTournamentRepository()
+    if os.getenv("DATABASE_URL")
+    else InMemoryTournamentRepository()
+)
 list_tournaments_use_case = ListTournamentsUseCase(repository)
 create_tournament_use_case = CreateTournamentUseCase(repository)
 enroll_team_use_case = EnrollTeamUseCase(repository)
