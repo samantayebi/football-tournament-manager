@@ -1,46 +1,95 @@
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 from src.application.ports.tournament_repository import TournamentRepository
 
 
 class InMemoryTournamentRepository(TournamentRepository):
     def __init__(self) -> None:
-        self._tournaments: Dict[int, Any] = {}
-        self._next_id = 1
+        self._tournaments: Dict[Any, Any] = {}
 
     def create_tournament(self, tournament: Any) -> Any:
         tournament_id = self._extract_id(tournament)
         if tournament_id is None:
-            tournament_id = self._next_id
-            self._next_id += 1
-            tournament = self._attach_id(tournament, tournament_id)
+            raise ValueError("Tournament id is required")
 
-        self._tournaments[int(tournament_id)] = tournament
+        self._tournaments[tournament_id] = tournament
         return tournament
 
     def get_tournament(self, tournament_id: Any) -> Optional[Any]:
-        try:
-            return self._tournaments.get(int(tournament_id))
-        except (TypeError, ValueError):
-            return None
+        return self._tournaments.get(tournament_id)
 
     def list_tournaments(self) -> Iterable[Any]:
         return list(self._tournaments.values())
 
-    def _extract_id(self, tournament: Any) -> Optional[int]:
+    def add_team(self, tournament_id: Any, team: Any) -> Any:
+        tournament = self._require_tournament(tournament_id)
+        teams = self._get_or_init_list(tournament, "teams")
+        teams.append(team)
+        return team
+
+    def list_teams(self, tournament_id: Any) -> List[Any]:
+        tournament = self._require_tournament(tournament_id)
+        return list(self._get_or_init_list(tournament, "teams"))
+
+    def create_match(self, tournament_id: Any, match: Any) -> Any:
+        tournament = self._require_tournament(tournament_id)
+        matches = self._get_or_init_list(tournament, "matches")
+        matches.append(match)
+        return match
+
+    def list_matches(self, tournament_id: Any) -> List[Any]:
+        tournament = self._require_tournament(tournament_id)
+        return list(self._get_or_init_list(tournament, "matches"))
+
+    def record_result(
+        self, tournament_id: Any, match_id: Any, home_goals: int, away_goals: int
+    ) -> Any:
+        tournament = self._require_tournament(tournament_id)
+        match = self._find_match(tournament, match_id)
+        if match is None:
+            raise ValueError("Match not found")
+
+        if isinstance(match, dict):
+            match["home_goals"] = home_goals
+            match["away_goals"] = away_goals
+        else:
+            setattr(match, "home_goals", home_goals)
+            setattr(match, "away_goals", away_goals)
+
+        return match
+
+    def _extract_id(self, tournament: Any) -> Optional[Any]:
         if isinstance(tournament, dict):
-            value = tournament.get("id")
-            return int(value) if value is not None else None
+            return tournament.get("id")
 
-        value = getattr(tournament, "id", None)
-        return int(value) if value is not None else None
+        return getattr(tournament, "id", None)
 
-    def _attach_id(self, tournament: Any, tournament_id: int) -> Any:
+    def _require_tournament(self, tournament_id: Any) -> Any:
+        tournament = self.get_tournament(tournament_id)
+        if tournament is None:
+            raise ValueError("Tournament not found")
+        return tournament
+
+    def _get_or_init_list(self, tournament: Any, field: str) -> List[Any]:
         if isinstance(tournament, dict):
-            return {**tournament, "id": tournament_id}
+            items = tournament.get(field)
+            if items is None:
+                items = []
+                tournament[field] = items
+            return items
 
-        if hasattr(tournament, "__dict__"):
-            setattr(tournament, "id", tournament_id)
-            return tournament
+        items = getattr(tournament, field, None)
+        if items is None:
+            items = []
+            setattr(tournament, field, items)
+        return items
 
-        return {"id": tournament_id, "value": tournament}
+    def _find_match(self, tournament: Any, match_id: Any) -> Optional[Any]:
+        for match in self._get_or_init_list(tournament, "matches"):
+            if isinstance(match, dict):
+                if match.get("id") == match_id:
+                    return match
+            else:
+                if getattr(match, "id", None) == match_id:
+                    return match
+        return None
