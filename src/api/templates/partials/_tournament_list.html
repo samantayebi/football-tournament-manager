@@ -1,3 +1,10 @@
+{% if message %}
+  <p class="alert alert--success">{{ message }}</p>
+{% endif %}
+{% if error %}
+  <p class="alert alert--error">{{ error }}</p>
+{% endif %}
+
 {% if tournaments %}
   <table>
     <thead>

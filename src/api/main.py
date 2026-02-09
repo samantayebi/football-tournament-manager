@@ -82,14 +82,22 @@ async def create_tournament_ui(request: Request):
         tournaments = list_tournaments_use_case.execute()
         return templates.TemplateResponse(
             "partials/_tournament_list.html",
-            {"request": request, "tournaments": tournaments},
+            {
+                "request": request,
+                "tournaments": tournaments,
+                "error": "Tournament name is required",
+            },
         )
 
     create_tournament_use_case.execute(str(name))
     tournaments = list_tournaments_use_case.execute()
     return templates.TemplateResponse(
         "partials/_tournament_list.html",
-        {"request": request, "tournaments": tournaments},
+        {
+            "request": request,
+            "tournaments": tournaments,
+            "message": "Tournament created",
+        },
     )
 
 
@@ -134,7 +142,11 @@ async def add_team_ui(request: Request, tournament_id: str):
     tournament = repository.get_tournament(tournament_id)
     return templates.TemplateResponse(
         "partials/_teams.html",
-        {"request": request, "tournament": tournament},
+        {
+            "request": request,
+            "tournament": tournament,
+            "message": "Team added",
+        },
     )
 
 
@@ -200,6 +212,7 @@ async def create_match_ui(request: Request, tournament_id: str):
             "request": request,
             "tournament": tournament,
             "team_name_by_id": _team_name_by_id(tournament),
+            "message": "Match created",
         },
     )
 
@@ -256,6 +269,7 @@ async def record_match_result_ui(
             "tournament": tournament,
             "standings": [_standing_to_dict(standing) for standing in standings],
             "team_name_by_id": _team_name_by_id(tournament),
+            "message": "Result saved",
         },
     )
 

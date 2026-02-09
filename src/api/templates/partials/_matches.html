@@ -34,8 +34,11 @@
     </button>
   </form>
 
+  {% if message %}
+    <p class="alert alert--success">{{ message }}</p>
+  {% endif %}
   {% if error %}
-    <p class="alert">{{ error }}</p>
+    <p class="alert alert--error">{{ error }}</p>
   {% endif %}
 
   {% if form_disabled %}
