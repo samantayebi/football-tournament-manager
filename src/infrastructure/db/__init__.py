@@ -1,3 +1,1 @@
-from .session import SessionLocal, engine, get_session
-
-__all__ = ["SessionLocal", "engine", "get_session"]
+# Intentionally empty to avoid eager engine creation at import time.
