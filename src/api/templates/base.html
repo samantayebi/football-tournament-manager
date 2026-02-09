@@ -3,11 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ title or "Football Tournament Manager" }}</title>
-    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <title>{% block title %}Football Tournament Manager{% endblock %}</title>
+    <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
-    <main>
+    <nav class="navbar">
+      <div class="container">
+        <a class="navbar__brand" href="/">Football Tournament Manager</a>
+      </div>
+    </nav>
+    <main class="container">
       {% block content %}{% endblock %}
     </main>
   </body>
