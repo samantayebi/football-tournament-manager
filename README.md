@@ -1,43 +1,28 @@
 # Football Tournament Manager
 
-FastAPI app with Jinja2 + HTMX UI and MySQL persistence for managing tournaments.
+FastAPI app with Jinja2 + HTMX UI and MySQL persistence for managing football tournaments.
 
 ## Features
 - Tournaments
 - Teams
 - Matches
 - Results
-- Standings
+- Standings (points + goal difference)
+
+## Architecture at a glance
+This project follows a Clean Architecture style:
+- `src/api` — FastAPI routes + Jinja2 templates + HTMX UI endpoints
+- `src/application` — use cases (application logic) + ports/interfaces
+- `src/domain` — domain models + domain services (e.g., standings computation)
+- `src/infrastructure` — DB session/ORM models + repository implementations (MySQL / in-memory)
+- `alembic/` — database migrations
 
 ## Prerequisites
 - Docker Desktop
 - Docker Compose
 
-## Quick Start
+## Quick Start (Docker)
 ```bash
 cp .env.example .env
 docker compose up --build -d
 docker compose exec app alembic upgrade head
-```
-
-Open:
-- http://127.0.0.1:8000/
-- http://127.0.0.1:8000/docs
-- http://127.0.0.1:8000/health
-
-## Verify persistence
-1) Create data in the UI (tournaments, teams, matches, results).
-2) Restart:
-```bash
-docker compose down
-docker compose up -d
-```
-3) Confirm tournaments still exist on the homepage.
-
-## Troubleshooting
-- Port 8000 busy: stop the process using it or change the host port in `docker-compose.yml`.
-- Rebuild cleanly:
-```bash
-docker compose down -v
-docker compose up --build -d
-```

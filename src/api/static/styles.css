@@ -98,3 +98,27 @@ th {
   background: #f3f4f6;
   font-weight: 600;
 }
+
+.table-highlight {
+  background: #fef9c3;
+  font-weight: 600;
+}
+
+.alert {
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+.alert--success {
+  background: #ecfdf3;
+  border: 1px solid #86efac;
+  color: #166534;
+}
+
+.alert--error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}

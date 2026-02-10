@@ -2,6 +2,25 @@
 
 This project follows a Clean Architecture style with clear boundaries between layers.
 
+```
+Browser
+  |
+  v
+FastAPI (src/api/main.py)
+  |
+  v
+Use Cases (src/application/use_cases/*)
+  |
+  v
+Repository Port (src/application/ports/tournament_repository.py)
+  |
+  v
+MySQL Repository (src/infrastructure/repositories/mysql_tournament_repository.py)
+  |
+  v
+MySQL
+```
+
 ## 1) System Context
 - **Browser**: HTMX-enhanced UI served by FastAPI templates.
 - **FastAPI app**: HTTP API + server-side rendered UI.
@@ -41,6 +60,15 @@ This project follows a Clean Architecture style with clear boundaries between la
 - **JSON API**:
   - `/tournaments`, `/tournaments/{id}/matches`, `/tournaments/{id}/standings`, etc.
   - Used by API clients and `/docs`.
+
+### Example end-to-end: record match result (UI)
+- **Route**: `POST /ui/tournaments/{tournament_id}/matches/{match_id}/result`
+- **Handler**: `src/api/main.py` → `record_match_result_ui`
+- **Use case**: `src/application/use_cases/record_match_result.py`
+- **Port**: `src/application/ports/tournament_repository.py` → `record_result`
+- **MySQL repo**: `src/infrastructure/repositories/mysql_tournament_repository.py`
+- **Standings**: `src/domain/services/standings.py`
+- **Template fragment**: `src/api/templates/partials/_match_and_standings.html`
 
 ## 5) Persistence & Migrations
 - **DB session/engine**: `src/infrastructure/db/session.py` (lazy engine initialization).
