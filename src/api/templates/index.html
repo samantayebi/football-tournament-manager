@@ -1,18 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>{{ title }}</h1>
-  <form
-    hx-post="/ui/tournaments"
-    hx-target="#tournament-list"
-    hx-swap="innerHTML"
-  >
-    <label for="tournament-name">Create tournament</label>
-    <input id="tournament-name" name="name" type="text" required />
-    <button type="submit">Create</button>
-  </form>
+  <div class="card">
+    <h1>Football Tournament Manager</h1>
+    
+    <section class="create-tournament-section">
+      <h2>Create tournament</h2>
+      <form
+        class="create-tournament-form"
+        hx-post="/ui/tournaments"
+        hx-target="#tournament-list"
+        hx-swap="innerHTML"
+      >
+        <div class="form-group-inline">
+          <input 
+            id="tournament-name" 
+            name="name" 
+            type="text" 
+            placeholder="Create tournament"
+            required 
+            class="tournament-input"
+          />
+          <button type="submit" class="create-button">Create</button>
+        </div>
+      </form>
+    </section>
 
-  <div id="tournament-list">
-    {% include "partials/_tournament_list.html" %}
+    <section class="tournaments-section">
+      <div id="tournament-list">
+        {% include "partials/_tournament_list.html" %}
+      </div>
+    </section>
   </div>
 {% endblock %}

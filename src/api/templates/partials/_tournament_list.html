@@ -6,7 +6,7 @@
 {% endif %}
 
 {% if tournaments %}
-  <table>
+  <table class="tournaments-table">
     <thead>
       <tr>
         <th>Name</th>
@@ -18,12 +18,14 @@
         <tr>
           <td>{{ tournament.name }}</td>
           <td>
-            <a href="/tournaments/{{ tournament.id }}">View</a>
+            <a href="/tournaments/{{ tournament.id }}" class="view-link">View</a>
           </td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
 {% else %}
-  <p>No tournaments yet.</p>
+  <div class="empty-state">
+    <p class="empty-state__message">No tournaments yet. Create your first tournament above!</p>
+  </div>
 {% endif %}

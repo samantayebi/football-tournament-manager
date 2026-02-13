@@ -63,13 +63,12 @@ def health_check():
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
+    """Render the home page with list of tournaments."""
     tournaments = list_tournaments_use_case.execute()
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
-            "title": "Football Tournament Manager",
-            "page_title": "Home",
             "tournaments": tournaments,
         },
     )
