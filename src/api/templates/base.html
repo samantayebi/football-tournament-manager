@@ -64,6 +64,18 @@
       document.body.addEventListener("htmx:afterSwap", function () {
         scheduleFlashDismiss();
       });
+      document.body.addEventListener("click", function (e) {
+        if (e.target.matches && e.target.matches("button.random-score-btn")) {
+          var form = e.target.closest("form");
+          if (!form) return;
+          var homeInput = form.querySelector('input[name="home_goals"]');
+          var awayInput = form.querySelector('input[name="away_goals"]');
+          if (homeInput && awayInput) {
+            homeInput.value = Math.floor(Math.random() * 6);
+            awayInput.value = Math.floor(Math.random() * 6);
+          }
+        }
+      });
     </script>
   </body>
 </html>
