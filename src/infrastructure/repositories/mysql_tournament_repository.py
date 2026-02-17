@@ -19,11 +19,17 @@ class MySQLTournamentRepository(TournamentRepository):
         with get_session() as session:
             try:
                 existing = session.get(TournamentModel, tournament_id)
+                champion_team_id = _get_field(tournament, "champion_team_id")
                 if existing is None:
-                    existing = TournamentModel(id=tournament_id, name=name)
+                    existing = TournamentModel(
+                        id=tournament_id,
+                        name=name,
+                        champion_team_id=champion_team_id,
+                    )
                     session.add(existing)
                 else:
                     existing.name = name
+                    existing.champion_team_id = champion_team_id
                 session.commit()
                 return _tournament_to_dict(existing)
             except Exception:
@@ -153,6 +159,7 @@ def _tournament_to_dict(model: TournamentModel) -> dict:
     return {
         "id": model.id,
         "name": model.name,
+        "champion_team_id": model.champion_team_id,
         "teams": [_team_to_dict(team) for team in list(model.teams or [])],
         "matches": [_match_to_dict(match) for match in list(model.matches or [])],
     }

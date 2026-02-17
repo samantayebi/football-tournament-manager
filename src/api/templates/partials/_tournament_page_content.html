@@ -1,0 +1,31 @@
+<div
+  id="tournament-page"
+  data-tournament-id="{{ tournament.id }}"
+  hx-on="htmx:afterSwap: if (event.detail.target.id === 'teams-section') { var id = document.getElementById('tournament-page').getAttribute('data-tournament-id'); htmx.ajax('get', '/tournaments/' + id, { target: '#tournament-page', swap: 'outerHTML', headers: { 'HX-Target': '#tournament-page' } }) }"
+>
+  <div class="tournament-detail-page">
+    <p class="tournament-back">
+      <a href="/">— Back to tournaments</a>
+    </p>
+    <h1 class="tournament-title">{{ tournament.name }}</h1>
+
+    <div class="tournament-layout">
+      <div class="tournament-panel">
+        <section>
+          <h2 class="tournament-section-title">Teams</h2>
+          {% include "partials/_teams.html" %}
+        </section>
+      </div>
+      <div id="match-and-standings" class="match-standings-area">
+        <section>
+          <h2 class="tournament-section-title">Matches &amp; Results</h2>
+          {% include "partials/_matches.html" %}
+        </section>
+        <section>
+          <h2 class="tournament-section-title">Standings</h2>
+          {% include "partials/_standings.html" %}
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

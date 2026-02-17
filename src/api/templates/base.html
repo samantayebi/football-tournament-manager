@@ -47,5 +47,23 @@
         {% block content %}{% endblock %}
       </main>
     </div>
+    <script>
+      function dismissFlash(el) {
+        if (!el) return;
+        el.style.transition = "opacity 0.4s ease";
+        el.style.opacity = "0";
+        setTimeout(function () {
+          el.remove();
+        }, 400);
+      }
+      function scheduleFlashDismiss() {
+        var el = document.getElementById("flash-message");
+        if (el) setTimeout(function () { dismissFlash(el); }, 3000);
+      }
+      document.addEventListener("DOMContentLoaded", scheduleFlashDismiss);
+      document.body.addEventListener("htmx:afterSwap", function () {
+        scheduleFlashDismiss();
+      });
+    </script>
   </body>
 </html>

@@ -9,6 +9,7 @@ class TournamentModel(Base):
 
     id = Column(String(36), primary_key=True)
     name = Column(String(255), nullable=False)
+    champion_team_id = Column(String(36), nullable=True)
 
     teams = relationship("TeamModel", back_populates="tournament")
     matches = relationship("MatchModel", back_populates="tournament")

@@ -307,18 +307,22 @@ def tournament_detail(request: Request, tournament_id: str):
 
     domain_tournament = _to_domain_tournament(tournament)
     standings = compute_standings(domain_tournament)
-    return templates.TemplateResponse(
-        "tournament_detail.html",
-        {
-            "request": request,
-            "tournament": tournament,
-            "standings": _sort_standings(
-                [_standing_to_dict(standing) for standing in standings]
-            ),
-            "team_name_by_id": _team_name_by_id(tournament),
-            "page_title": "Tournament",
-        },
-    )
+    context = {
+        "request": request,
+        "tournament": tournament,
+        "standings": _sort_standings(
+            [_standing_to_dict(standing) for standing in standings]
+        ),
+        "team_name_by_id": _team_name_by_id(tournament),
+        "page_title": "Tournament",
+    }
+    # Return only #tournament-page fragment when HTMX requests it for swap
+    if request.headers.get("HX-Target") == "#tournament-page":
+        return templates.TemplateResponse(
+            "tournament_detail_fragment.html",
+            context,
+        )
+    return templates.TemplateResponse("tournament_detail.html", context)
 
 
 @app.post("/tournaments")
